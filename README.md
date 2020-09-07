@@ -8,3 +8,5 @@ Merhabalar bu projede Coursera sitesinde türkçe altyazı olmayan kursların Go
 - Paketlenmiş öge yükleye tıklayın.
 - İndirdiğiniz klasörü seçin.
 - Kurulum tamamlandı şimdi Courseradan bir kurs açın. Eklenti ikonları kısmından bir kere eklentiye tıklayın ve artık çevirmeye başladı. Her video da ikona basmanız gerekecek.
+
+İyi çalışmalar.
