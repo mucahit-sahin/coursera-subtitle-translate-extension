@@ -86,6 +86,10 @@ async function openBilingual () {
   }
 }
 
+String.prototype.replaceAt = function(index, replacement) {
+  return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+}
+
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -95,6 +99,13 @@ function getTexts(cues)
   let cuesTextList = ""
   for(let i=0;i < cues.length;i++)
   {
+    for(let j=0;j<cues[i].text.length;j++)
+    {
+      if(cues[i].text[j] == '.' && cues[i].text[j+1] == ' ')
+      {
+        cues[i].text = cues[i].text.replaceAt(j, ",")
+      }
+    }
         cuesTextList+= cues[i].text.replace(/\n/g, ' ') + " "
   }
   return cuesTextList
