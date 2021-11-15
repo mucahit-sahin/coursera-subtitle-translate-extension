@@ -14,5 +14,6 @@ Merhabalar bu projede Coursera sitesinde türkçe altyazı olmayan kursların Go
 ## Değişiklikler
 ### 15.11.2021
 - Cümle tabanlı çeviri özelliği eklendi. Bu sayede anlam bütünlüğü bozulmadan Türkçe çeviri yapılabilmekte.
+- 
 ![Example Image](https://raw.githubusercontent.com/ugurkurt26/coursera-subtitle-translate-extension/master/example-image1.png)
 
