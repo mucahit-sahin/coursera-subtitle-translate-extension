@@ -24,21 +24,63 @@ async function openBilingual () {
         tr.track.mode = 'showing'
       } 
       else {
-
+        
         await sleep(500)
         let cues = en.track.cues
-
-        const cuesTextList = getCuesTextList(cues)
-
-        for (let i = 0; i < cuesTextList.length; i++) {
-          getTranslation(cuesTextList[i][1], translatedText => {
-
-            const translatedTextList = translatedText.split('\n\n')
-            for (let j = 0; j < translatedTextList.length; j++) {
-              cues[cuesTextList[i][0] + j].text += '\n' + translatedTextList[j]
+        
+        //İngilizce yazıdaki cümle bitiş anlarının tespiti.
+        // .....cümle bitti. Yeni cümle 
+        //Burada sadece nokta karakterinden sonra boşluk olan durumlarda cümlenin bittiği varsayılmıştır.
+        // 75.3 , model.fit gibi özel ifade belirten durumlarda noktayı cümle bitişi olarak algılamaması için.
+        var endSentence = []
+        for(let i=0;i<cues.length;i++)
+        {
+          for(let j=0;j<cues[i].text.length;j++)
+          {
+            if(cues[i].text[j] == '.' && cues[i].text[j+1] == undefined)
+            {
+              endSentence.push(i)
             }
-          })
+          }
         }
+        ///////////////////////
+
+
+        var cuesTextList = getTexts(cues)
+        var newCuestTextList = ""
+        for(let i=0;i<cuesTextList.length;i++)
+        {
+          
+          if(cuesTextList[i] == '.' && cuesTextList[i+1] == ' ')
+            newCuestTextList += ". z~~~z"
+          else
+            newCuestTextList += cuesTextList[i]
+          }
+
+        getTranslation(newCuestTextList, translatedText => {
+
+          var translatedList = translatedText.split(' z~~~z')
+          translatedList.splice(-1,1)
+
+          for(let i=0;i<endSentence.length;i++)
+          {
+            if(i!=0)
+            {
+              for(let j=endSentence[i-1]+1;j<=endSentence[i];j++)
+              {
+                cues[j].text = translatedList[i]
+                
+              }
+            }
+            else
+            {
+              for(let j=0;j<=endSentence[i];j++)
+              {
+                cues[j].text = translatedList[i]
+              }
+            }
+          }
+        })
       }
     }
   }
@@ -48,25 +90,19 @@ function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function getCuesTextList (cues) {
-
-  let cuesTextList = []
-  for (let i = 0; i < cues.length; i++) {
-    if (cuesTextList.length &&
-        cuesTextList[cuesTextList.length - 1][1].length +
-        cues[i].text.length < 5000) {
-
-      cuesTextList[cuesTextList.length - 1][1] += '\n\n' + cues[i].text
-    } else {
-      cuesTextList.push([i, cues[i].text])
-    }
+function getTexts(cues)
+{
+  let cuesTextList = ""
+  for(let i=0;i < cues.length;i++)
+  {
+        cuesTextList+= cues[i].text.replace(/\n/g, ' ') + " "
   }
   return cuesTextList
 }
 
 function getTranslation (words, callback) {
 
-  const xhr = new XMLHttpRequest()
+ const xhr = new XMLHttpRequest()
  let url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=tr&dt=t&q=${encodeURI(words)}`
   xhr.open('GET', url, true)
   xhr.responseType = 'text'
@@ -86,7 +122,8 @@ function getTranslation (words, callback) {
   xhr.send()
 }
 
-chrome.runtime.onMessage.addListener(
+chrome.runtime.onMessage.addListener
+(
   function (request, sender) {
     openBilingual()
   }
