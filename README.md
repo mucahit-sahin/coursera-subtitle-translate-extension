@@ -10,3 +10,10 @@ Merhabalar bu projede Coursera sitesinde türkçe altyazı olmayan kursların Go
 - Kurulum tamamlandı şimdi Courseradan bir kurs açın. Eklenti ikonları kısmından bir kere eklentiye tıklayın ve artık çevirmeye başladı. Her video da ikona basmanız gerekecek.
 
 İyi çalışmalar.
+
+## Değişiklikler
+### 15.11.2021
+- Cümle tabanlı çeviri özelliği eklendi. Bu sayede anlam bütünlüğü bozulmadan Türkçe çeviri yapılabilmekte.
+- 
+![Example Image](https://raw.githubusercontent.com/ugurkurt26/coursera-subtitle-translate-extension/master/example-image1.png)
+
