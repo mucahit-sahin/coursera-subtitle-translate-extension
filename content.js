@@ -8,74 +8,69 @@ async function openBilingual () {
   let en
   let tr
   if (tracks.length) {
-    for (let i = 0; i < tracks.length; i++) {
-      if (tracks[i].srclang === 'en') {
+
+    for (let i = 0; i < tracks.length; i++) 
+    {
+      if (tracks[i].srclang === 'en')
+      {
         en = tracks[i]
       }
-      else if (tracks[i].srclang === 'tr') {
-        tr = tracks[i]
-      }
     }
 
-  if (en) {
-    en.track.mode = 'showing'
-
-    await sleep(500)
-    let cues = en.track.cues
-    
-    //İngilizce yazıdaki cümle bitiş anlarının tespiti.
-    // .....cümle bitti. Yeni cümle 
-    //Burada sadece nokta karakterinden sonra boşluk olan durumlarda cümlenin bittiği varsayılmıştır.
-    // 75.3 , model.fit gibi özel ifade belirten durumlarda noktayı cümle bitişi olarak algılamaması için.
-    var endSentence = []
-    for(let i=0;i<cues.length;i++)
+    if (en)
     {
-      for(let j=0;j<cues[i].text.length;j++)
-      {
-        if(cues[i].text[j] == '.' && cues[i].text[j+1] == undefined)
-        {
-          endSentence.push(i)
-        }
-      }
-    }
-    ///////////////////////
+      en.track.mode = 'showing'
 
-
-    var cuesTextList = getTexts(cues)
-    var newCuestTextList = ""
-    for(let i=0;i<cuesTextList.length;i++)
-    {
+      await sleep(500)
+      let cues = en.track.cues
       
-      if(cuesTextList[i] == '.' && cuesTextList[i+1] == ' ')
-        newCuestTextList += ". z~~~z"
-      else
-        newCuestTextList += cuesTextList[i]
-      }
-
-    getTranslation(newCuestTextList, translatedText => {
-
-      var translatedList = translatedText.split(' z~~~z')
-      translatedList.splice(-1,1)
-
-      for(let i=0;i<endSentence.length;i++)
+      //İngilizce yazıdaki cümle bitiş anlarının tespiti.
+      // .....cümle bitti. Yeni cümle 
+      //Burada sadece nokta karakterinden sonra boşluk olan durumlarda cümlenin bittiği varsayılmıştır.
+      // 75.3 , model.fit gibi özel ifade belirten durumlarda noktayı cümle bitişi olarak algılamaması için.
+      var endSentence = []
+      for(let i=0;i<cues.length;i++)
       {
-        if(i!=0)
+        for(let j=0;j<cues[i].text.length;j++)
         {
-          for(let j=endSentence[i-1]+1;j<=endSentence[i];j++)
+          if(cues[i].text[j] == '.' && cues[i].text[j+1] == undefined)
           {
-            cues[j].text = translatedList[i]
-            
-          }
-        }
-        else
-        {
-          for(let j=0;j<=endSentence[i];j++)
-          {
-            cues[j].text = translatedList[i]
+            endSentence.push(i)
           }
         }
       }
-    })
+      ///////////////////////
+
+
+      var cuesTextList = getTexts(cues)
+
+      getTranslation(cuesTextList, translatedText => {
+
+        var translatedList = translatedText.split(' z~~~z')
+        translatedList.splice(-1,1)
+
+        for(let i=0;i<endSentence.length;i++)
+        {
+          if(i!=0)
+          {
+            for(let j=endSentence[i-1]+1;j<=endSentence[i];j++)
+            {
+              cues[j].text = translatedList[i]
+              //console.log(translatedList[i])
+              
+            }
+          }
+          else
+          {
+            for(let j=0;j<=endSentence[i];j++)
+            {
+              cues[j].text = translatedList[i]
+              //console.log(translatedList[i])
+            }
+          }
+        }
+      })
+    }
   }
 }
 
@@ -92,14 +87,21 @@ function getTexts(cues)
   let cuesTextList = ""
   for(let i=0;i < cues.length;i++)
   {
-    for(let j=0;j<cues[i].text.length;j++)
+    /*for(let j=0;j<cues[i].text.length;j++)
     {
       if(cues[i].text[j] == '.' && cues[i].text[j+1] == ' ')
       {
         cues[i].text = cues[i].text.replaceAt(j, ",")
       }
-    }
-        cuesTextList+= cues[i].text.replace(/\n/g, ' ') + " "
+    }*/
+
+    if(cues[i].text[cues[i].text.length-1] == '.')
+    {
+       cues[i].text = cues[i].text.replaceAt(cues[i].text.length-1, ". z~~~z ")
+       //console.log(cues[i].text.replaceAt(cues[i].text.length-1, ". z~~~z "))
+}
+
+    cuesTextList+= cues[i].text.replace(/\n/g, ' ') + " "
   }
   return cuesTextList
 }
@@ -125,7 +127,7 @@ function getTranslation (words, callback) {
   }
   xhr.send()
 }
-}
+
 chrome.runtime.onMessage.addListener
 (
   function (request, sender) {
