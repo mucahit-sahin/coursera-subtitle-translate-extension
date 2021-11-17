@@ -24,16 +24,15 @@ async function openBilingual () {
       await sleep(500)
       let cues = en.track.cues
       
-      //İngilizce yazıdaki cümle bitiş anlarının tespiti.
-      // .....cümle bitti. Yeni cümle 
-      //Burada sadece nokta karakterinden sonra boşluk olan durumlarda cümlenin bittiği varsayılmıştır.
-      // 75.3 , model.fit gibi özel ifade belirten durumlarda noktayı cümle bitişi olarak algılamaması için.
       var endSentence = []
       for(let i=0;i<cues.length;i++)
       {
         for(let j=0;j<cues[i].text.length;j++)
         {
-          if(cues[i].text[j] == '.' && cues[i].text[j+1] == undefined)
+          if((cues[i].text[j] == '.' ||
+            cues[i].text[j] == '?' ||
+            cues[i].text[j] == '!' ||
+            cues[i].text[j] == '"') && cues[i].text[j+1] == undefined)
           {
             endSentence.push(i)
           }
@@ -96,10 +95,13 @@ function getTexts(cues)
     }*/
 
     if(cues[i].text[cues[i].text.length-1] == '.')
-    {
-       cues[i].text = cues[i].text.replaceAt(cues[i].text.length-1, ". z~~~z ")
-       //console.log(cues[i].text.replaceAt(cues[i].text.length-1, ". z~~~z "))
-}
+      cues[i].text = cues[i].text.replaceAt(cues[i].text.length-1, ". z~~~z ")
+    else if(cues[i].text[cues[i].text.length-1] == '?')
+      cues[i].text = cues[i].text.replaceAt(cues[i].text.length-1, "? z~~~z ")
+    else if(cues[i].text[cues[i].text.length-1] == '!')
+      cues[i].text = cues[i].text.replaceAt(cues[i].text.length-1, "! z~~~z ")
+    else if(cues[i].text[cues[i].text.length-1] == '"')
+      cues[i].text = cues[i].text.replaceAt(cues[i].text.length-1, "\" z~~~z ")
 
     cuesTextList+= cues[i].text.replace(/\n/g, ' ') + " "
   }
