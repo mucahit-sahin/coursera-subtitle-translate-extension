@@ -22,4 +22,4 @@ Good work.
 
 ## Example Image
 
-![](https://github.com/mucahit-sahin/coursera-subtitle-translate-extension/blob/master/images/images/example-image1.png)
+![](https://github.com/mucahit-sahin/coursera-subtitle-translate-extension/blob/master/images/example-image1.png)
